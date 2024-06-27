@@ -1,4 +1,6 @@
 import FeedCard from "@/components/FeedCard";
+import LoginButon from "@/components/LoginButon";
+import { GoogleLogin } from "@react-oauth/google";
 import { FaTwitter } from "react-icons/fa";
 
 interface sidebarType {
@@ -71,7 +73,9 @@ export default function Home() {
             <FeedCard />
           </div>
         </div>
-        <div className="col-span-3">a</div>
+        <div className="col-span-3">
+          <LoginButon />
+        </div>
       </section>
     </main>
   );
