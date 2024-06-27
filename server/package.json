@@ -12,11 +12,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "prisma": "^5.16.1",
     "tsc-watch": "^6.2.0",
     "typescript": "^5.5.2"
   },
   "dependencies": {
     "@apollo/server": "^4.10.4",
+    "@prisma/client": "^5.16.1",
     "express": "^4.19.2",
     "graphql": "^16.9.0"
   }
