@@ -1,20 +1,20 @@
+import express from "express";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
-import express from "express";
-
+import { prismaClient } from "../client/db/index";
+import User from "./user/index";
 export async function initServer() {
   const app = express();
   app.use(express.json());
   const apolloServer = new ApolloServer({
     typeDefs: `
+    ${User.types}
     type Query{
-    sayHello: String
+    ${User.queries}
     }
     `,
     resolvers: {
-      Query: {
-        sayHello: () => "Hello World",
-      },
+      Query: { ...User.resolvers },
     },
   });
   await apolloServer.start();
