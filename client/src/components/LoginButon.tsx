@@ -10,13 +10,12 @@ export default function LoginButon() {
     try {
       const googleToken = res.credential;
       if (!googleToken) throw new Error("Google credential are missing");
-      const { verifyGoogleToken } = await gql_client.request(
-        verifyUserGoogleTokenQuery,
-        {
-          token: googleToken,
-        }
-      );
-    } catch (error) {
+      const data = await gql_client.request(verifyUserGoogleTokenQuery, {
+        token: googleToken,
+      });
+      localStorage.setItem("echo_token", data.verifyGoogleToken as string);
+      toast.success("Logged In Successfully");
+    } catch (error: any) {
       toast.error(error.message || "Something Went Wrong");
     }
   }, []);

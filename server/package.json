@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
     "prisma": "^5.16.1",
     "tsc-watch": "^6.2.0",
@@ -21,6 +22,7 @@
     "@apollo/server": "^4.10.4",
     "@prisma/client": "^5.16.1",
     "axios": "^1.7.2",
+    "cors": "^2.8.5",
     "express": "^4.19.2",
     "graphql": "^16.9.0",
     "jsonwebtoken": "^9.0.2"

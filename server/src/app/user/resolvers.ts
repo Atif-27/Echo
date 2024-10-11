@@ -34,7 +34,7 @@ export const resolvers = {
       }
     );
 
-    const user = prismaClient.user.findUnique({
+    const user = await prismaClient.user.findUnique({
       where: {
         email: data.email,
       },
