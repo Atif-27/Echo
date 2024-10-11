@@ -25,7 +25,7 @@ export const resolvers = {
   verifyGoogleToken: async (parent: any, { token }: { token: string }) => {
     // ! Create a Token and send it to google oauth api for verification
     const googleToken = token;
-    const googleOauthURL = new URL("https://oauth2.googleapis.com/tokeninfo");
+    const googleOauthURL = new URL(process.env.GOOGLE_OAUTH_URL + "/tokeninfo");
     googleOauthURL.searchParams.set("id_token", googleToken);
     const { data } = await axios.get<GoogleTokenType>(
       googleOauthURL.toString(),
@@ -34,8 +34,10 @@ export const resolvers = {
       }
     );
 
-    const user = await prismaClient.user.findUnique({
-      where: { email: data.email },
+    const user = prismaClient.user.findUnique({
+      where: {
+        email: data.email,
+      },
     });
 
     if (!user) {
