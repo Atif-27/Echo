@@ -1,12 +1,12 @@
 "use client";
 import gql_client from "@/clients";
 import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
-import { GoogleLogin } from "@react-oauth/google";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { useCallback } from "react";
 import toast from "react-hot-toast";
 
 export default function LoginButon() {
-  const handleResponse = useCallback(async (res) => {
+  const handleResponse = useCallback(async (res: CredentialResponse) => {
     try {
       const googleToken = res.credential;
       if (!googleToken) throw new Error("Google credential are missing");
