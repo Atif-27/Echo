@@ -2,6 +2,7 @@
 import FeedCard from "@/components/FeedCard";
 import FeedHeader from "@/components/FeedHeader";
 import LoginButon from "@/components/LoginButon";
+import { useGetAllTweet } from "@/hooks/tweet";
 import { useCurrentUser } from "@/hooks/user";
 import Image from "next/image";
 import { FaTwitter } from "react-icons/fa";
@@ -40,6 +41,8 @@ const sidebarList: sidebarType[] = [
 
 export default function Home() {
   const { user } = useCurrentUser();
+  const { tweets } = useGetAllTweet();
+
   return (
     <main className="text-xl">
       <section className="grid grid-cols-10 w-screen h-screen">
@@ -83,13 +86,13 @@ export default function Home() {
         <div className="col-span-4  border-r-[1px] border-l-[1px]  border-gray-600/80">
           <div className="flex flex-col overflow-y-auto h-screen">
             <FeedHeader />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
-            <FeedCard />
+            {tweets?.map((tweet) => {
+              return (
+                <div key={tweet?.id}>
+                  <FeedCard tweet={tweet} />
+                </div>
+              );
+            })}
           </div>
         </div>
         <div className="col-span-3">{!user && <LoginButon />}</div>

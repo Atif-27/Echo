@@ -14,7 +14,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 const documents = {
-    "\n  #graphql\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n": types.VerifyUserGoogleTokenQueryDocument,
+    "\n  #graphql\n  mutation createTweet($payload: CreateTweetData) {\n    createTweet(payload: $payload) {\n      id\n    }\n  }\n": types.CreateTweetDocument,
+    "\n  query GetAllTweets {\n    getAllTweets {\n      author {\n        id\n        firstName\n        profileImage\n        lastName\n      }\n      id\n      content\n      imageURL\n    }\n  }\n": types.GetAllTweetsDocument,
+    "\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n": types.VerifyUserGoogleTokenQueryDocument,
     "\n  query GetCurrentUserQuery {\n    getCurrentUser {\n      id\n      email\n      firstName\n      lastName\n      profileImage\n    }\n  }\n": types.GetCurrentUserQueryDocument,
 };
 
@@ -35,7 +37,15 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  #graphql\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n"): (typeof documents)["\n  #graphql\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n"];
+export function graphql(source: "\n  #graphql\n  mutation createTweet($payload: CreateTweetData) {\n    createTweet(payload: $payload) {\n      id\n    }\n  }\n"): (typeof documents)["\n  #graphql\n  mutation createTweet($payload: CreateTweetData) {\n    createTweet(payload: $payload) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetAllTweets {\n    getAllTweets {\n      author {\n        id\n        firstName\n        profileImage\n        lastName\n      }\n      id\n      content\n      imageURL\n    }\n  }\n"): (typeof documents)["\n  query GetAllTweets {\n    getAllTweets {\n      author {\n        id\n        firstName\n        profileImage\n        lastName\n      }\n      id\n      content\n      imageURL\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n"): (typeof documents)["\n  query VerifyUserGoogleTokenQuery($token: String!) {\n    verifyGoogleToken(token: $token)\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

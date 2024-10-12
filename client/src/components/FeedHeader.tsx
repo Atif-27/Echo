@@ -1,15 +1,30 @@
+"use client";
+import { useCreateTweet } from "@/hooks/tweet";
 import { useCurrentUser } from "@/hooks/user";
 import Image from "next/image";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { FaImage } from "react-icons/fa";
 
+interface TNewTweet {
+  content: string;
+  imageURL: string;
+}
+const initialNewTweet = {
+  content: "",
+  imageURL: "",
+};
 export default function FeedHeader() {
+  const [newTweet, setNewTweet] = useState<TNewTweet>(initialNewTweet);
+  const mutate = useCreateTweet();
   const handleImageUpload = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "images/*");
     input.click();
   }, []);
+  const handleTweet = useCallback(() => {
+    mutate(newTweet);
+  }, [mutate, newTweet]);
   const { user } = useCurrentUser();
   if (!user) return;
   return (
@@ -27,12 +42,22 @@ export default function FeedHeader() {
         <textarea
           className="w-full bg-transparent focus:outline-none border-b border-slate-950 border-b-slate-700 p-3"
           placeholder="So what's up"
+          value={newTweet.content}
+          onChange={(e) =>
+            setNewTweet((newTweet) => ({
+              ...newTweet,
+              content: e.target.value,
+            }))
+          }
           rows={3}
         />
         <div className="w-full flex justify-between items-center">
           <FaImage className=" cursor-pointer" onClick={handleImageUpload} />
 
-          <button className="bg-blue-400 hover:bg-blue-500 text-sm text-white py-2 px-4  mt-4 rounded-full w-fit">
+          <button
+            onClick={handleTweet}
+            className="bg-blue-400 hover:bg-blue-500 text-sm text-white py-2 px-4  mt-4 rounded-full w-fit"
+          >
             Tweet
           </button>
         </div>
