@@ -2,6 +2,7 @@ import axios from "axios";
 import { prismaClient } from "../../client/db";
 import JWTservice from "../../services/generateJWT";
 import { GraphqlContext } from "../../types/context";
+import { Tweet, User } from "@prisma/client";
 
 interface GoogleTokenType {
   iss: string; // Issuer
@@ -22,7 +23,7 @@ interface GoogleTokenType {
   kid: string; // Key ID
   typ: string; // Token Type
 }
-export const resolvers = {
+const queries = {
   verifyGoogleToken: async (parent: any, { token }: { token: string }) => {
     // ! Takes a Token and send it to google oauth api for verification
     const googleToken = token;
@@ -74,4 +75,18 @@ export const resolvers = {
 
     return user;
   },
+};
+
+const extraResolvers = {
+  tweets: (parent: User) =>
+    prismaClient.tweet.findMany({
+      where: {
+        authorId: parent.id,
+      },
+    }),
+};
+
+export const resolvers = {
+  queries,
+  extraResolvers,
 };

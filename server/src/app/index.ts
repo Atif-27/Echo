@@ -4,6 +4,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
 import User from "./user/index";
 import JWTservice from "../services/generateJWT";
+import Tweet from "./tweet";
 export async function initServer() {
   const app = express();
   app.use(express.json());
@@ -11,12 +12,20 @@ export async function initServer() {
   const apolloServer = new ApolloServer({
     typeDefs: `
     ${User.types}
+    ${Tweet.types}
     type Query{
     ${User.queries}
+    ${Tweet.queries}
+    }
+    type Mutation{
+    ${Tweet.mutations}
     }
     `,
     resolvers: {
-      Query: { ...User.resolvers },
+      Tweet: { ...Tweet.resolvers.extraResolvers },
+      User: { ...User.resolvers.extraResolvers },
+      Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
+      Mutation: { ...Tweet.resolvers.mutations },
     },
   });
   await apolloServer.start();
