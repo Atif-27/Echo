@@ -1,5 +1,5 @@
 import gql_client from "@/clients";
-import { getCurrentUserQuery } from "@/graphql/query/user";
+import { getCurrentUserQuery, getUserById } from "@/graphql/query/user";
 import { useQuery } from "@tanstack/react-query";
 
 export function useCurrentUser() {

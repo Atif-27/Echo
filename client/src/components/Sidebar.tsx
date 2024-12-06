@@ -2,43 +2,56 @@
 import { useCurrentUser } from "@/hooks/user";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useMemo } from "react";
 import { FaTwitter } from "react-icons/fa";
 interface sidebarType {
   name: string;
+  route: string;
   icon: React.ReactNode;
 }
-const sidebarList: sidebarType[] = [
-  {
-    name: "Home",
-    icon: <FaTwitter />,
-  },
-  {
-    name: "Explore",
-    icon: <FaTwitter />,
-  },
-  {
-    name: "Notifications",
-    icon: <FaTwitter />,
-  },
-  {
-    name: "Messages",
-    icon: <FaTwitter />,
-  },
-  {
-    name: "Bookmarks",
-    icon: <FaTwitter />,
-  },
-
-  {
-    name: "Profile",
-    icon: <FaTwitter />,
-  },
-];
 
 export default function Sidebar() {
   const { user } = useCurrentUser();
   const router = useRouter();
+  const id = user?.id;
+  const sidebarList: sidebarType[] = useMemo(
+    () => [
+      {
+        name: "Home",
+        route: "/",
+        icon: <FaTwitter />,
+      },
+      {
+        name: "Explore",
+        route: "/explore",
+        icon: <FaTwitter />,
+      },
+      {
+        name: "Notifications",
+        route: "/notifications",
+
+        icon: <FaTwitter />,
+      },
+      {
+        name: "Messages",
+        route: "/messages",
+        icon: <FaTwitter />,
+      },
+      {
+        name: "Bookmarks",
+        route: "/bookmarks",
+
+        icon: <FaTwitter />,
+      },
+
+      {
+        name: "Profile",
+        route: `/profile/${id}`,
+        icon: <FaTwitter />,
+      },
+    ],
+    [id]
+  );
   return (
     <div className="col-span-3 flex items-end justify-end  ">
       <div className="  h-full w-full max-w-xs pt-5 px-8 flex flex-col justify-between">
@@ -51,7 +64,7 @@ export default function Sidebar() {
               <div
                 key={item.name}
                 className="flex gap-4 items-center cursor-pointer  p-3   rounded-full hover:bg-gray-600"
-                onClick={() => router.push(item.name.toLowerCase())}
+                onClick={() => router.push(item.route.toLowerCase())}
               >
                 {item.icon}
                 <span>{item.name}</span>
