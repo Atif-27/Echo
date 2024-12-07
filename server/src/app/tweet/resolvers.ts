@@ -6,10 +6,22 @@ interface CreateTweetPayload {
   imageURL?: string;
 }
 
+import UserService from "../../services/userService";
+import TweetService from "../../services/tweetService";
+
 const queries = {
   getAllTweets: async () => {
-    const tweets = await prismaClient.tweet.findMany();
+    const tweets = TweetService.getAllTweets();
     return tweets;
+  },
+  getSignedURL: async (
+    parent: any,
+    { imageType }: { imageType: string },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user || !ctx.user.id) throw new Error("You are Unauthenticated");
+    const signedURL = await TweetService.getSignedURL(imageType, ctx.user.id);
+    return signedURL;
   },
 };
 const mutations = {
@@ -18,32 +30,17 @@ const mutations = {
     { payload }: { payload: CreateTweetPayload },
     context: GraphqlContext
   ) => {
-    console.log(context);
-
     if (!context.user) throw new Error("You are not authenticated");
-    const tweet = await prismaClient.tweet.create({
-      data: {
-        content: payload.content,
-        imageURL: payload.imageURL,
-        author: {
-          connect: {
-            id: context.user.id,
-          },
-        },
-      },
-    });
-    console.log(tweet);
-
+    const tweet = TweetService.createTweet(
+      payload.content,
+      payload.imageURL || "",
+      context.user.id
+    );
     return tweet;
   },
 };
 const extraResolvers = {
-  author: (parent: Tweet) =>
-    prismaClient.user.findUnique({
-      where: {
-        id: parent.authorId,
-      },
-    }),
+  author: (parent: Tweet) => UserService.getUserById(parent.authorId),
 };
 
 export const resolvers = { mutations, extraResolvers, queries };

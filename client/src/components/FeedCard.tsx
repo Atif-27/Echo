@@ -24,6 +24,9 @@ const FeedCard = ({ tweet }) => {
           </h3>
         </Link>
         <p className="text-sm">{tweet.content}</p>
+        {tweet.imageURL && (
+          <Image src={tweet.imageURL} width={400} height={400} alt="image" />
+        )}
         <div className="flex justify-between gap-4 mt-4   w-[80%]">
           <div>
             <FaRegComment />
