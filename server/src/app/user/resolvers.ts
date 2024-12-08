@@ -18,11 +18,35 @@ const queries = {
     await UserService.getUserById(id),
 };
 
+const mutations = {
+  followUser: async (
+    parent: any,
+    { to }: { to: string },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user || !ctx.user?.id) throw new Error("User not Authenticated");
+    const res = await UserService.followUser(ctx.user?.id, to);
+    return res;
+  },
+  unFollowUser: async (
+    parent: any,
+    { to }: { to: string },
+    ctx: GraphqlContext
+  ) => {
+    if (!ctx.user || !ctx.user?.id) throw new Error("User not Authenticated");
+    const res = await UserService.unfollowUser(ctx.user?.id, to);
+    return true;
+  },
+};
+
 const extraResolvers = {
   tweets: (parent: User) => TweetService.getTweetsByUserId(parent.id),
+  followers: (parent: User) => UserService.getAllFollowers(parent.id),
+  following: (parent: User) => UserService.getAllFollowing(parent.id),
 };
 
 export const resolvers = {
   queries,
+  mutations,
   extraResolvers,
 };

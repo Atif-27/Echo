@@ -15,9 +15,7 @@ class JWTservice {
   // Updated decodeToken method with detailed logging
   public static async decodeToken(token: string) {
     try {
-      console.log("Attempting to verify token...");
       const data = JWT.verify(token, JWT_SECRET);
-      console.log("Token successfully verified");
       return data as JWTuser;
     } catch (error) {
       return null;

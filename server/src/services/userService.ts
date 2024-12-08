@@ -67,6 +67,74 @@ class UserService {
     });
     return user;
   }
+
+  public static async followUser(from: string, to: string) {
+    try {
+      const existingFollow = await prismaClient.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: from,
+            followingId: to,
+          },
+        },
+      });
+
+      if (existingFollow) {
+        throw new Error("You Already Follow the user");
+      }
+
+      const res = await prismaClient.follow.create({
+        data: {
+          followerId: from,
+          followingId: to,
+        },
+      });
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  public static async unfollowUser(from: string, to: string) {
+    await prismaClient.follow.delete({
+      where: {
+        followerId_followingId: {
+          followerId: from,
+          followingId: to,
+        },
+      },
+    });
+    return true;
+  }
+
+  public static async getAllFollowing(userId: string) {
+    const res = await prismaClient.follow.findMany({
+      where: {
+        follower: {
+          id: userId,
+        },
+      },
+      include: {
+        following: true,
+      },
+    });
+    const finalRes = res.map((el) => el.following);
+    return finalRes;
+  }
+  public static async getAllFollowers(userId: string) {
+    const res = await prismaClient.follow.findMany({
+      where: {
+        following: {
+          id: userId,
+        },
+      },
+      include: {
+        follower: true,
+      },
+    });
+    const finalRes = res.map((el) => el.follower);
+    return finalRes;
+  }
 }
 
 export default UserService;

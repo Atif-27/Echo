@@ -19,13 +19,14 @@ export async function initServer() {
     }
     type Mutation{
     ${Tweet.mutations}
+    ${User.mutations}
     }
     `,
     resolvers: {
       Tweet: { ...Tweet.resolvers.extraResolvers },
       User: { ...User.resolvers.extraResolvers },
       Query: { ...User.resolvers.queries, ...Tweet.resolvers.queries },
-      Mutation: { ...Tweet.resolvers.mutations },
+      Mutation: { ...Tweet.resolvers.mutations, ...User.resolvers.mutations },
     },
   });
   await apolloServer.start();
@@ -37,10 +38,6 @@ export async function initServer() {
           const token = req.headers.authorization
             ? req.headers.authorization.split(" ")[1]
             : null;
-          console.log(
-            "Incoming request with token:",
-            req.headers.authorization
-          );
           const user = token ? await JWTservice.decodeToken(token) : undefined;
           return { user };
         } catch (error) {
