@@ -8,5 +8,7 @@ export const types = `#graphql
     tweets:[Tweet]
     followers: [User]
     following:[User]
+    isFollowing: Boolean
+    isMyProfile:Boolean
  }
 `;

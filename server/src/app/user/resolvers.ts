@@ -5,8 +5,18 @@ import UserService from "../../services/userService";
 import TweetService from "../../services/tweetService";
 
 const queries = {
-  verifyGoogleToken: async (parent: any, { token }: { token: string }) => {
+  verifyGoogleToken: async (
+    parent: any,
+    { token }: { token: string },
+    ctx: GraphqlContext
+  ) => {
     const resToken = await UserService.verifyGoogleToken(token);
+    ctx.res.cookie("token", resToken, {
+      httpOnly: true,
+      secure: true,
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
     return resToken;
   },
 
@@ -43,6 +53,14 @@ const extraResolvers = {
   tweets: (parent: User) => TweetService.getTweetsByUserId(parent.id),
   followers: (parent: User) => UserService.getAllFollowers(parent.id),
   following: (parent: User) => UserService.getAllFollowing(parent.id),
+  isMyProfile: (parent: User, {}, ctx: GraphqlContext) => {
+    if (!ctx.user || !ctx.user.id) return false;
+    return parent.id === ctx.user?.id;
+  },
+  isFollowing: (parent: User, {}, ctx: GraphqlContext) => {
+    if (!ctx.user || !ctx.user.id) return false;
+    return UserService.isFollowing(ctx.user!.id, parent.id);
+  },
 };
 
 export const resolvers = {

@@ -56,7 +56,7 @@ class UserService {
     });
     if (!userInDb) throw new Error("User Not Found");
     const jwt = await JWTservice.generateJWT(userInDb);
-
+    console.log(jwt);
     return jwt as string;
   }
   public static async getUserById(id: string) {
@@ -134,6 +134,16 @@ class UserService {
     });
     const finalRes = res.map((el) => el.follower);
     return finalRes;
+  }
+
+  public static async isFollowing(from: string, to: string) {
+    const res = await prismaClient.follow.findFirst({
+      where: {
+        followerId: from,
+        followingId: to,
+      },
+    });
+    return res !== null;
   }
 }
 

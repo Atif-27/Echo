@@ -2,13 +2,21 @@ import express from "express";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import cors from "cors";
+import coookieParser from "cookie-parser";
 import User from "./user/index";
 import JWTservice from "../services/generateJWT";
 import Tweet from "./tweet";
+import user from "./user/index";
 export async function initServer() {
   const app = express();
   app.use(express.json());
-  app.use(cors());
+  app.use(coookieParser());
+  app.use(
+    cors({
+      origin: process.env.CLIENT_URL,
+      credentials: true,
+    })
+  );
   const apolloServer = new ApolloServer({
     typeDefs: `
     ${User.types}
@@ -37,13 +45,17 @@ export async function initServer() {
         try {
           const token = req.headers.authorization
             ? req.headers.authorization.split(" ")[1]
+            : req.cookies
+            ? req.cookies.token
             : null;
-          const user = token ? await JWTservice.decodeToken(token) : undefined;
-          return { user };
+          let user = token ? await JWTservice.decodeToken(token) : undefined;
+          if (user === null) user = undefined;
+          return { user, res };
         } catch (error) {
           console.log(error);
           return {
-            user: null,
+            user: undefined,
+            res,
           };
         }
       },
