@@ -1,14 +1,28 @@
-import gql_client from "@/clients";
 import FeedCard from "@/components/FeedCard";
+import FollowButton from "@/components/FollowButton";
 import { getUserById } from "@/graphql/query/user";
 import Image from "next/image";
 import React from "react";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import { cookies } from "next/headers";
+import { GraphQLClient } from "graphql-request";
 
 async function fetchUserDetails(id: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("token")?.value;
+
+  const gql_client = new GraphQLClient(process.env.NEXT_PUBLIC_GQL_URL || "", {
+    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
   const data = await gql_client.request(getUserById, {
     userId: id,
   });
+  console.log(data);
+
   return data.getUserById;
 }
 
@@ -32,7 +46,7 @@ export default async function Page({
           <p className="text-sm text-slate-400">{user?.tweets?.length} posts</p>
         </div>
       </div>
-      <div className="p-4 pt-10 border">
+      <div className="p-4 pt-10 ">
         {user?.profileImage && (
           <Image
             src={user.profileImage}
@@ -42,14 +56,26 @@ export default async function Page({
             className="rounded-full"
           />
         )}
-      </div>
-      <div>
-        <div className="px-6 mt-4">
-          <h1 className="font-semibold text-3xl">
-            {user?.firstName} {user?.lastName}
-          </h1>
+        <div>
+          <div className="mt-4">
+            <h1 className="font-semibold text-3xl">
+              {user?.firstName} {user?.lastName}
+            </h1>
+          </div>
+        </div>
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex gap-4 text-base text-slate-400">
+            <p>{user?.followers?.length} Followers</p>
+            <p>{user?.following?.length} Following</p>
+          </div>
+          <FollowButton
+            userId={user?.id as string}
+            isMyProfile={user?.isMyProfile as boolean}
+            isFollowing={user?.isFollowing as boolean}
+          />
         </div>
       </div>
+
       <div>
         {user?.tweets?.map((tweet) => {
           return (
