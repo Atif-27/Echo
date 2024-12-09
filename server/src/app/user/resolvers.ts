@@ -61,6 +61,40 @@ const extraResolvers = {
     if (!ctx.user || !ctx.user.id) return false;
     return UserService.isFollowing(ctx.user!.id, parent.id);
   },
+  recommendedUser: async (parent: User, {}, ctx: GraphqlContext) => {
+    if (!ctx.user || !ctx.user.id) return [];
+    const myFollowings = await prismaClient.follow.findMany({
+      where: {
+        followerId: ctx.user.id,
+      },
+      include: {
+        following: {
+          include: {
+            followers: {
+              include: {
+                following: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const usersToRecommend = [];
+    for (const following of myFollowings) {
+      for (const followingOfMyFollowing of following.following.followers) {
+        if (
+          followingOfMyFollowing.following.id !== ctx.user.id &&
+          myFollowings.findIndex(
+            (e) => e.followingId === followingOfMyFollowing.following.id
+          ) < 0
+        ) {
+          usersToRecommend.push(followingOfMyFollowing.following);
+        }
+      }
+    }
+    return usersToRecommend;
+  },
 };
 
 export const resolvers = {

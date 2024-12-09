@@ -28,6 +28,13 @@ export const getCurrentUserQuery = graphql(`
         profileImage
         id
       }
+      recommendedUser {
+        firstName
+        lastName
+        profileImage
+        id
+        isFollowing
+      }
     }
   }
 `);

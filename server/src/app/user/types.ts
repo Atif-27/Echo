@@ -10,5 +10,6 @@ export const types = `#graphql
     following:[User]
     isFollowing: Boolean
     isMyProfile:Boolean
+    recommendedUser:[User]
  }
 `;
