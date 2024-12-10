@@ -2,7 +2,7 @@ import type { CodegenConfig } from "@graphql-codegen/cli";
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "http://localhost:4000/graphql",
+  schema: process.env.NEXT_PUBLIC_GQL_URL,
   documents: "src/**/*.{tsx,ts}",
   generates: {
     "src/gql/": {
