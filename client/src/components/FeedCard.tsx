@@ -3,7 +3,7 @@ import Link from "next/link";
 import { AiOutlineRetweet } from "react-icons/ai";
 import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { GoDownload } from "react-icons/go";
-const FeedCard = ({ tweet }) => {
+const FeedCard = ({ tweet }: any) => {
   return (
     <section className="grid grid-cols-12 border-b border-gray-600/80 hover:bg-gray-800 p-4 ">
       <div className="col-span-1 ">
