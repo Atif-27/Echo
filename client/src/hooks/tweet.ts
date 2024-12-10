@@ -25,6 +25,11 @@ export function useCreateTweet() {
           id: "1",
         });
     },
+    onError: async (error) => {
+      toast.error("You can only tweet every 10 seconds", {
+        id: "1",
+      });
+    },
   });
   return mutation.mutate;
 }

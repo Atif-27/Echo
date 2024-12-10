@@ -3,6 +3,7 @@ import { GraphqlContext } from "../../types/context";
 import { User } from "@prisma/client";
 import UserService from "../../services/userService";
 import TweetService from "../../services/tweetService";
+import { redisClient } from "../../client/redis";
 
 const queries = {
   verifyGoogleToken: async (
@@ -52,7 +53,9 @@ const mutations = {
 const extraResolvers = {
   tweets: (parent: User) => TweetService.getTweetsByUserId(parent.id),
   followers: (parent: User) => UserService.getAllFollowers(parent.id),
-  following: (parent: User) => UserService.getAllFollowing(parent.id),
+  following: (parent: User) => {
+    UserService.getAllFollowing(parent.id);
+  },
   isMyProfile: (parent: User, {}, ctx: GraphqlContext) => {
     if (!ctx.user || !ctx.user.id) return false;
     return parent.id === ctx.user?.id;
@@ -63,6 +66,11 @@ const extraResolvers = {
   },
   recommendedUser: async (parent: User, {}, ctx: GraphqlContext) => {
     if (!ctx.user || !ctx.user.id) return [];
+    const cached = await redisClient.get(`RECOMMEND_USER_${ctx.user.id}`);
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
     const myFollowings = await prismaClient.follow.findMany({
       where: {
         followerId: ctx.user.id,
@@ -93,6 +101,11 @@ const extraResolvers = {
         }
       }
     }
+    await redisClient.setex(
+      `RECOMMEND_USER_${ctx.user.id}`,
+      60 * 60 * 24,
+      JSON.stringify(usersToRecommend)
+    );
     return usersToRecommend;
   },
 };

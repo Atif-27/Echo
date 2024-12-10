@@ -2,6 +2,7 @@ import { Tweet } from "@prisma/client";
 import { prismaClient } from "../client/db";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { redisClient } from "../client/redis";
 
 class TweetService {
   public static s3Client = new S3Client({
@@ -12,21 +13,35 @@ class TweetService {
     },
   });
 
-  public static async getAllTweets(): Promise<Tweet[]> {
+  public static async getAllTweets() {
+    const cache = await redisClient.get("ALL_TWEETS");
+    if (cache) {
+      return JSON.parse(cache);
+    }
     const tweets = await prismaClient.tweet.findMany({
       orderBy: {
         createdAt: "desc",
       },
     });
+    await redisClient.setex("ALL_TWEETS", 60 * 60, JSON.stringify(tweets));
     return tweets;
   }
 
-  public static async getTweetsByUserId(userId: string): Promise<Tweet[]> {
+  public static async getTweetsByUserId(userId: string) {
+    const cache = await redisClient.get(`TWEETS_${userId}`);
+    if (cache) {
+      return JSON.parse(cache);
+    }
     const tweets = await prismaClient.tweet.findMany({
       where: {
         authorId: userId,
       },
     });
+    await redisClient.setex(
+      `TWEETS_${userId}`,
+      60 * 60,
+      JSON.stringify(tweets)
+    );
     return tweets;
   }
   public static async createTweet(
@@ -34,6 +49,10 @@ class TweetService {
     imageURL: string,
     userId: string
   ) {
+    const isRateLimited = await redisClient.get(`RATE_LIMIT:TWEET:${userId}`);
+    if (isRateLimited) {
+      throw new Error("You can only tweet once every 10 seconds");
+    }
     const tweet = await prismaClient.tweet.create({
       data: {
         content: content,
@@ -45,7 +64,9 @@ class TweetService {
         },
       },
     });
-
+    await redisClient.setex(`RATE_LIMIT:TWEET:${userId}`, 10, 1);
+    await redisClient.del("ALL_TWEETS");
+    await redisClient.del(`TWEETS_${userId}`);
     return tweet;
   }
   public static async getSignedURL(

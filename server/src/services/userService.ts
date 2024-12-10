@@ -1,6 +1,8 @@
 import axios from "axios";
 import { prismaClient } from "../client/db";
 import JWTservice from "./generateJWT";
+import { redisClient } from "../client/redis";
+import { GraphqlContext } from "../types/context";
 interface GoogleTokenType {
   iss: string; // Issuer
   azp: string; // Authorized Party
@@ -60,11 +62,16 @@ class UserService {
     return jwt as string;
   }
   public static async getUserById(id: string) {
+    const cache = await redisClient.get(`USER_${id}`);
+    if (cache) {
+      return JSON.parse(cache);
+    }
     const user = await prismaClient.user.findUnique({
       where: {
         id,
       },
     });
+    await redisClient.setex(`USER_${id}`, 60 * 60, JSON.stringify(user));
     return user;
   }
 
@@ -89,6 +96,9 @@ class UserService {
           followingId: to,
         },
       });
+      await redisClient.del(`RECOMMEND_USER_${from}`);
+      await redisClient.del(`USER_{from}`);
+      await redisClient.del(`USER_{to}`);
     } catch (error) {
       return false;
     }
@@ -104,6 +114,9 @@ class UserService {
         },
       },
     });
+    await redisClient.del(`RECOMMEND_USER_${from}`);
+    await redisClient.del(`USER_{from}`);
+    await redisClient.del(`USER_{to}`);
     return true;
   }
 
