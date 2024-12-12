@@ -4,8 +4,10 @@ import {
   followUserMutation,
   unfollowUserMutation,
 } from "@/graphql/mutation/user";
+import { useCurrentUser } from "@/hooks/user";
 import { useRouter } from "next/navigation";
 import React, { useCallback } from "react";
+import toast from "react-hot-toast";
 
 const FollowButton = ({
   isMyProfile,
@@ -17,7 +19,13 @@ const FollowButton = ({
   userId: string;
 }) => {
   const router = useRouter();
+  const { user } = useCurrentUser();
+
   const handleClick = useCallback(async () => {
+    if (!user) {
+      toast.error("You need to login first");
+      return;
+    }
     if (!isFollowing) {
       await gql_client.request(followUserMutation, {
         to: userId,
@@ -29,7 +37,7 @@ const FollowButton = ({
       });
       router.refresh();
     }
-  }, [isFollowing, userId, router]);
+  }, [isFollowing, userId, router, user]);
   return (
     <div>
       {!isMyProfile && (

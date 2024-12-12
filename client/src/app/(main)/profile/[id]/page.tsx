@@ -21,8 +21,6 @@ async function fetchUserDetails(id: string) {
   const data = await gql_client.request(getUserById, {
     userId: id,
   });
-  console.log(data);
-
   return data.getUserById;
 }
 
@@ -36,7 +34,7 @@ export default async function Page({
   const userId = params.id;
   const user = await fetchUserDetails(userId);
   return (
-    <section className="my-4">
+    <section className=" flex flex-col overflow-y-auto h-screen">
       <div className="flex justify-start items-center gap-6">
         <IoMdArrowRoundBack size={20} className="cursor-pointer" />
         <div>

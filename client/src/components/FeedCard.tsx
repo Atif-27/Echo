@@ -5,7 +5,7 @@ import { FaHeart, FaRegComment, FaRegHeart } from "react-icons/fa";
 import { GoDownload } from "react-icons/go";
 const FeedCard = ({ tweet }: any) => {
   return (
-    <section className="grid grid-cols-12 border-b border-gray-600/80 hover:bg-gray-800 p-4 ">
+    <section className="grid grid-cols-12 max-md:space-x-4 border-b border-gray-600/80 hover:bg-gray-800 p-4 ">
       <div className="col-span-1 ">
         <Link href={"/profile/" + tweet.author.id}>
           <Image

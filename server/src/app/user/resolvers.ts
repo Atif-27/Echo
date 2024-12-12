@@ -54,9 +54,7 @@ const mutations = {
 const extraResolvers = {
   tweets: (parent: User) => TweetService.getTweetsByUserId(parent.id),
   followers: (parent: User) => UserService.getAllFollowers(parent.id),
-  following: (parent: User) => {
-    UserService.getAllFollowing(parent.id);
-  },
+  following: (parent: User) => UserService.getAllFollowing(parent.id),
   isMyProfile: (parent: User, {}, ctx: GraphqlContext) => {
     if (!ctx.user || !ctx.user.id) return false;
     return parent.id === ctx.user?.id;

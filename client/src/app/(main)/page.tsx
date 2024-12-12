@@ -3,10 +3,10 @@ import React from "react";
 import { useGetAllTweet } from "@/hooks/tweet";
 import FeedCard from "@/components/FeedCard";
 import FeedHeader from "@/components/FeedHeader";
+import Skeleton from "react-loading-skeleton";
 
 export default function MainFeed() {
-  const { tweets } = useGetAllTweet();
-
+  const { tweets, isLoading } = useGetAllTweet();
   return (
     <div className="flex flex-col overflow-y-auto h-screen">
       <FeedHeader />
@@ -17,6 +17,11 @@ export default function MainFeed() {
           </div>
         );
       })}
+      {isLoading && (
+        <div>
+          <Skeleton className=" gap-7 h-24" count={10} />
+        </div>
+      )}
     </div>
   );
 }

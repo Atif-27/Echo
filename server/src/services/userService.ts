@@ -58,7 +58,6 @@ class UserService {
     });
     if (!userInDb) throw new Error("User Not Found");
     const jwt = await JWTservice.generateJWT(userInDb);
-    console.log(jwt);
     return jwt as string;
   }
   public static async getUserById(id: string) {
